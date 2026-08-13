@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={londrina.className}>
         <Providers>{children}</Providers>
         <footer className="footer">
-          <span className="noggles">⌐◨-◨</span> Fake World Assets is a Nouns DAO experiment. Not financial advice, obviously.
+          <span className="noggles">⌐◨-◨</span> FWA.WTF is a Nouns DAO experiment. Not financial advice, obviously.
         </footer>
       </body>
     </html>

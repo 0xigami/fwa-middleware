@@ -57,23 +57,23 @@ Everything here is measured from FWA's contracts onchain (six-hour sample on 202
 
 Hand-picked from the treasury and shaped like a pyramid: the oldest Noun we have at the top, three from the early days, six from the middle years, fourteen from the no-bid era that were minted straight into the treasury. All 24 heads are different, all 24 accessories are different, and Noun 1980 is the only Noun in the entire treasury wearing the Gnars accessory.
 
-![](https://noun.pics/11.png?size=96)
+![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/11.png)
 
 **11**
 
-![](https://noun.pics/26.png?size=96) ![](https://noun.pics/82.png?size=96) ![](https://noun.pics/89.png?size=96)
+![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/26.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/82.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/89.png)
 
 **26 · 82 · 89**
 
-![](https://noun.pics/279.png?size=96) ![](https://noun.pics/408.png?size=96) ![](https://noun.pics/548.png?size=96) ![](https://noun.pics/559.png?size=96) ![](https://noun.pics/801.png?size=96) ![](https://noun.pics/861.png?size=96)
+![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/279.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/408.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/548.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/559.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/801.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/861.png)
 
 **279 · 408 · 548 · 559 · 801 · 861**
 
-![](https://noun.pics/1914.png?size=96) ![](https://noun.pics/1917.png?size=96) ![](https://noun.pics/1929.png?size=96) ![](https://noun.pics/1933.png?size=96) ![](https://noun.pics/1942.png?size=96) ![](https://noun.pics/1950.png?size=96) ![](https://noun.pics/1954.png?size=96)
+![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1914.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1917.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1929.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1933.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1942.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1950.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1954.png)
 
 **1914 · 1917 · 1929 · 1933 · 1942 · 1950 · 1954**
 
-![](https://noun.pics/1957.png?size=96) ![](https://noun.pics/1958.png?size=96) ![](https://noun.pics/1969.png?size=96) ![](https://noun.pics/1980.png?size=96) ![](https://noun.pics/1983.png?size=96) ![](https://noun.pics/1988.png?size=96) ![](https://noun.pics/1989.png?size=96)
+![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1957.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1958.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1969.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1980.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1983.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1988.png) ![](https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/img/1989.png)
 
 **1957 · 1958 · 1969 · 1980 · 1983 · 1988 · 1989**
 
