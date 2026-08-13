@@ -183,3 +183,23 @@ contract BackingFloorTest is NounsListingManagerForkTest {
         vm.stopPrank();
     }
 }
+// appended: pull robustness
+contract PullRobustnessTest is NounsListingManagerForkTest {
+    function test_pull_skipsStaleIds() public {
+        vm.prank(TREASURY);
+        IERC721(NOUNS).transferFrom(TREASURY, address(0xbeef), N1);
+
+        uint256[] memory ids = new uint256[](3);
+        ids[0] = N1;
+        ids[1] = N2;
+        ids[2] = N3;
+        vm.startPrank(TREASURY);
+        IERC721(NOUNS).setApprovalForAll(address(mgr), true);
+        mgr.pull(ids);
+        vm.stopPrank();
+
+        assertEq(IERC721(NOUNS).ownerOf(N1), address(0xbeef)); // skipped, not reverted
+        assertEq(IERC721(NOUNS).ownerOf(N2), address(mgr));
+        assertEq(IERC721(NOUNS).ownerOf(N3), address(mgr));
+    }
+}

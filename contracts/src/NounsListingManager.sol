@@ -52,6 +52,7 @@ contract NounsListingManager {
 
     event OperatorSet(address indexed operator);
     event Pulled(uint256[] tokenIds);
+    event PullSkipped(uint256 indexed tokenId);
     event Listed(uint256 indexed tokenId, uint256 indexed listingId, uint256 backing);
     event NounReturned(uint256 indexed tokenId);
     event SweptETH(uint256 amount);
@@ -100,8 +101,16 @@ contract NounsListingManager {
 
     /// @notice Load Nouns from the treasury. Called as a proposal action after
     ///         setApprovalForAll; a 10-action proposal cannot fit 24 transfers.
+    /// @dev Skips ids the treasury no longer owns instead of reverting: the id
+    ///      list is frozen at proposal creation, and a concurrent proposal
+    ///      moving one Noun must not brick the whole program. Caller and
+    ///      destination are fixed, so skipping is trust-free.
     function pull(uint256[] calldata tokenIds) external onlyTreasury {
         for (uint256 i; i < tokenIds.length; ++i) {
+            if (NOUNS.ownerOf(tokenIds[i]) != TREASURY) {
+                emit PullSkipped(tokenIds[i]);
+                continue;
+            }
             NOUNS.transferFrom(TREASURY, address(this), tokenIds[i]);
         }
         emit Pulled(tokenIds);
