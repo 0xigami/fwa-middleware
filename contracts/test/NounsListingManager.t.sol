@@ -29,6 +29,7 @@ contract NounsListingManagerForkTest is Test {
     address constant NOUNS = 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03;
     address constant FWA = 0xB276F62DB0ce8CA2Ca5bc522695bE604521eAc1c;
     address constant TREASURY = 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71;
+    address constant REWARDS = 0x6a1a1C0CfB3D3C538e13D36d608a5bcaa992fc78;
     address constant OPERATOR = 0x387a161C6b25aA854100aBaED39274e51aaffffd; // gami.eth
 
     // three of the proposal's 24
@@ -40,7 +41,7 @@ contract NounsListingManagerForkTest is Test {
 
     function setUp() public {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 25_742_497);
-        mgr = new NounsListingManager(NOUNS, FWA, TREASURY, OPERATOR);
+        mgr = new NounsListingManager(NOUNS, FWA, REWARDS, TREASURY, OPERATOR, 1 ether);
         vm.deal(TREASURY, TREASURY.balance + 40 ether);
     }
 
@@ -163,6 +164,22 @@ contract NounsListingManagerForkTest is Test {
         (,,,,, uint256 v2,,,,,) = IFWAView(FWA).listings(listingId);
         assertEq(v2, 1.22 ether);
         assertEq(address(mgr).balance, balBefore); // refund came back to manager
+        vm.stopPrank();
+    }
+}
+// appended: backing floor
+contract BackingFloorTest is NounsListingManagerForkTest {
+    function test_backingFloor_blocksCheapListings() public {
+        _load();
+        vm.startPrank(OPERATOR);
+        vm.expectRevert(NounsListingManager.BackingTooLow.selector);
+        mgr.list(N1, 0.5 ether);
+        uint256 listingId = mgr.list(N1, 1.22 ether);
+        mgr.activateListings(50);
+        vm.warp(block.timestamp + 3 days);
+        vm.roll(block.number + 21_600);
+        vm.expectRevert(NounsListingManager.BackingTooLow.selector);
+        mgr.updateBacking(listingId, 0.5 ether, 0);
         vm.stopPrank();
     }
 }

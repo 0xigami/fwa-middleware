@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.24;
+pragma solidity 0.8.26;
 
 interface IERC721 {
     function transferFrom(address from, address to, uint256 tokenId) external;
@@ -14,10 +14,14 @@ interface IERC20 {
     function balanceOf(address who) external view returns (uint256);
 }
 
+interface IFWARewards {
+    function claimDepositorTokens(uint256[] calldata listingIds) external;
+    function withdrawTokens() external;
+}
+
 interface IFWA {
     function listNFT(address collection, uint256 tokenId) external payable returns (uint256);
     function withdrawListing(uint256 listingId) external;
-    function relistNFT(uint256 listingId) external payable;
     function updateBacking(uint256 listingId, uint256 newBacking) external payable;
     function depositorReclaimBacking(uint256 listingId) external;
     function depositorReclaimNFT(uint256 listingId) external;
@@ -37,7 +41,12 @@ interface IFWA {
 contract NounsListingManager {
     IERC721 public immutable NOUNS;
     IFWA public immutable FWA;
+    IFWARewards public immutable REWARDS;
     address public immutable TREASURY;
+    /// @notice Floor on listing backing: blocks the operator from listing (or
+    ///         lowering) a Noun cheap enough for a colluding player to keep it
+    ///         at a discount.
+    uint256 public immutable MIN_BACKING;
 
     address public operator;
 
@@ -51,6 +60,8 @@ contract NounsListingManager {
 
     error NotTreasury();
     error NotOperator();
+    error BackingTooLow();
+    error ZeroAddress();
 
     modifier onlyTreasury() {
         if (msg.sender != TREASURY) revert NotTreasury();
@@ -62,10 +73,22 @@ contract NounsListingManager {
         _;
     }
 
-    constructor(address nouns, address fwa, address treasury, address operator_) {
+    constructor(
+        address nouns,
+        address fwa,
+        address rewards,
+        address treasury,
+        address operator_,
+        uint256 minBacking
+    ) {
+        if (nouns == address(0) || fwa == address(0) || rewards == address(0) || treasury == address(0)) {
+            revert ZeroAddress();
+        }
         NOUNS = IERC721(nouns);
         FWA = IFWA(fwa);
+        REWARDS = IFWARewards(rewards);
         TREASURY = treasury;
+        MIN_BACKING = minBacking;
         operator = operator_;
         emit OperatorSet(operator_);
     }
@@ -105,6 +128,7 @@ contract NounsListingManager {
     // ---------------------------------------------------------------- operator
 
     function list(uint256 tokenId, uint256 backing) external onlyOperator returns (uint256 listingId) {
+        if (backing < MIN_BACKING) revert BackingTooLow();
         NOUNS.approve(address(FWA), tokenId);
         listingId = FWA.listNFT{value: backing}(address(NOUNS), tokenId);
         emit Listed(tokenId, listingId, backing);
@@ -114,15 +138,15 @@ contract NounsListingManager {
         FWA.withdrawListing(listingId);
     }
 
-    function relist(uint256 listingId, uint256 topUp) external onlyOperator {
-        FWA.relistNFT{value: topUp}(listingId);
-    }
-
     function updateBacking(uint256 listingId, uint256 newBacking, uint256 topUp) external onlyOperator {
+        if (newBacking < MIN_BACKING) revert BackingTooLow();
         FWA.updateBacking{value: topUp}(listingId, newBacking);
     }
 
-    function reclaimBacking(uint256 listingId) external onlyOperator {
+    /// @notice WARNING: this is the keepNFT-economics exit. The manager keeps
+    ///         99% of the backing but the Noun goes to the purchaser. Only for
+    ///         allocated listings the operator has decided to let go.
+    function reclaimBackingAndSurrenderNoun(uint256 listingId) external onlyOperator {
         FWA.depositorReclaimBacking(listingId);
     }
 
@@ -153,9 +177,11 @@ contract NounsListingManager {
         emit SweptETH(amount);
     }
 
+    /// @dev Raw call: tolerates no-return-data tokens (USDT-style).
     function sweepToken(address token) external onlyOperator {
         uint256 amount = IERC20(token).balanceOf(address(this));
-        require(IERC20(token).transfer(TREASURY, amount), "TOKEN_SWEEP_FAILED");
+        (bool ok, bytes memory ret) = token.call(abi.encodeCall(IERC20.transfer, (TREASURY, amount)));
+        require(ok && (ret.length == 0 || abi.decode(ret, (bool))), "TOKEN_SWEEP_FAILED");
         emit SweptToken(token, amount);
     }
 
@@ -177,6 +203,17 @@ contract NounsListingManager {
 
     function activateListings(uint256 count) external {
         FWA.activateListings(count);
+    }
+
+    /// $FWA depositor rewards are gated to the depositor address on the
+    /// separate FWARewards contract; both calls pay the manager, so they are
+    /// safe to leave permissionless. sweepToken completes the exit.
+    function claimDepositorTokens(uint256[] calldata listingIds) external {
+        REWARDS.claimDepositorTokens(listingIds);
+    }
+
+    function withdrawRewardTokens() external {
+        REWARDS.withdrawTokens();
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure returns (bytes4) {
