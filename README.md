@@ -2,7 +2,7 @@
 
 Middleware for the "Fake World Assets" Nouns DAO proposal: 24 treasury Nouns listed on [fwa.fun](https://fwa.fun) at floor ÷ 0.9, with every exit path hardcoded back to the Nouns treasury.
 
-Spec: `/workspace/nouns-fwa-middleware-spec.md`. Proposal draft: `/workspace/nouns-fwa-proposal-draft.md`.
+Spec: [docs/SPEC.md](docs/SPEC.md).
 
 ## Layout
 
