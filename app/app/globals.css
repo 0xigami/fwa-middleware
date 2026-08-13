@@ -119,3 +119,4 @@ a { color: var(--red); }
   .noun-card { width: 100px; }
   .noun-card img { width: 80px; height: 80px; }
 }
+.op-input { width: 9rem; padding: 0.3rem 0.5rem; border: 2px solid #151c3b; font-family: inherit; font-size: 0.85rem; }

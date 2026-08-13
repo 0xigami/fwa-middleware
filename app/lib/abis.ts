@@ -12,6 +12,14 @@ export const managerAbi = parseAbi([
   "function sweepETH()",
   "function claimFees(uint256[] listingIds)",
   "function withdrawEarnings()",
+  "function updateBacking(uint256 listingId, uint256 newBacking, uint256 topUp)",
+  "function reclaimNFT(uint256 listingId)",
+  "function reclaimBackingAndSurrenderNoun(uint256 listingId)",
+  "function finalizeUnsettled(uint256 listingId)",
+  "function activateListings(uint256 count)",
+  "function sweepToken(address token)",
+  "function claimDepositorTokens(uint256[] listingIds)",
+  "function withdrawRewardTokens()",
 ]);
 
 export const fwaAbi = parseAbi([

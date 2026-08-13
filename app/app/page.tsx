@@ -9,7 +9,11 @@ function Badge({ status }: { status: NounStatus }) {
     case "treasury": return <span className="badge b-idle">In treasury</span>;
     case "manager": return <span className="badge b-warm">Held by manager</span>;
     case "listed": return <span className="badge b-live">Listed {fmtEth(status.backing)}</span>;
-    case "settlement": return <span className="badge b-hot">In settlement</span>;
+    case "settlement": {
+      const left = status.allocatedAt + 7 * 86400 - Math.floor(Date.now() / 1000);
+      const hours = Math.max(1, Math.floor(left / 3600));
+      return <span className="badge b-hot">{left > 0 ? `in settlement, ${hours}h to decide` : "settlement overdue"}</span>;
+    }
     case "kept": return <span className="badge b-gone">Kept by {shortAddr(status.by)}</span>;
     case "home": return <span className="badge b-home">Home</span>;
   }

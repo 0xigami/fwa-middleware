@@ -17,7 +17,7 @@ export type NounStatus =
   | { kind: "treasury" }
   | { kind: "manager" }
   | { kind: "listed"; backing: bigint }
-  | { kind: "settlement" }
+  | { kind: "settlement"; allocatedAt: number; backing: bigint }
   | { kind: "kept"; by: Address }
   | { kind: "home" };
 
@@ -117,12 +117,12 @@ async function fetchAll(): Promise<FwaData> {
       : Promise.resolve([]),
   ]);
 
-  const listingInfo: Record<string, { purchaser: Address; value: bigint }> = {};
+  const listingInfo: Record<string, { purchaser: Address; value: bigint; allocatedAt: number }> = {};
   listingIds.forEach((lid, i) => {
     const row = listingRows[i];
     if (row && row.status === "success") {
-      const [, , purchaser, , , value] = row.result as readonly [Address, Address, Address, bigint, bigint, bigint, bigint, bigint, bigint, bigint, number];
-      listingInfo[lid.toString()] = { purchaser, value };
+      const [, , purchaser, , , value, , , , allocatedAt] = row.result as readonly [Address, Address, Address, bigint, bigint, bigint, bigint, bigint, bigint, bigint, number];
+      listingInfo[lid.toString()] = { purchaser, value, allocatedAt: Number(allocatedAt) };
     }
   });
 
@@ -137,7 +137,7 @@ async function fetchAll(): Promise<FwaData> {
       const info = listingInfo[(data.listingIdByToken[id] ?? 0n).toString()];
       data.statuses[id] =
         info && info.purchaser !== zeroAddress
-          ? { kind: "settlement" }
+          ? { kind: "settlement", allocatedAt: info.allocatedAt, backing: info.value }
           : { kind: "listed", backing: info?.value ?? 0n };
     } else if (owner) {
       data.statuses[id] = { kind: "kept", by: res.result as Address };
