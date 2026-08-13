@@ -39,7 +39,7 @@ contract NounsListingManagerForkTest is Test {
 
     NounsListingManager mgr;
 
-    function setUp() public {
+    function setUp() public virtual {
         vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 25_742_497);
         mgr = new NounsListingManager(NOUNS, FWA, REWARDS, TREASURY, OPERATOR, 1 ether);
         vm.deal(TREASURY, TREASURY.balance + 40 ether);
@@ -201,5 +201,42 @@ contract PullRobustnessTest is NounsListingManagerForkTest {
         assertEq(IERC721(NOUNS).ownerOf(N1), address(0xbeef)); // skipped, not reverted
         assertEq(IERC721(NOUNS).ownerOf(N2), address(mgr));
         assertEq(IERC721(NOUNS).ownerOf(N3), address(mgr));
+    }
+}
+// appended: exact proposal actions replay
+contract ProposalActionsTest is NounsListingManagerForkTest {
+    function setUp() public override {
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"));
+        mgr = new NounsListingManager(NOUNS, FWA, REWARDS, TREASURY, OPERATOR, 1 ether);
+        vm.deal(TREASURY, TREASURY.balance + 40 ether);
+    }
+
+    function test_exactProposalActions_all24() public {
+        uint256[24] memory fixed24 = [uint256(11), 26, 82, 89, 279, 408, 548, 559, 801, 861, 1914, 1917, 1929, 1933, 1942, 1950, 1954, 1957, 1958, 1969, 1980, 1983, 1988, 1989];
+        uint256[] memory ids = new uint256[](24);
+        for (uint256 i; i < 24; ++i) ids[i] = fixed24[i];
+
+        uint256 mgrBalBefore = address(mgr).balance;
+        vm.startPrank(TREASURY);
+        // action 1
+        IERC721(NOUNS).setApprovalForAll(address(mgr), true);
+        // action 2, via raw call with the encoded args from docs/TRANSACTIONS.md
+        (bool ok,) = address(mgr).call(abi.encodeWithSignature("pull(uint256[])", ids));
+        require(ok, "pull failed");
+        // action 3
+        IERC721(NOUNS).setApprovalForAll(address(mgr), false);
+        // action 4
+        (ok,) = address(mgr).call{value: 30 ether}("");
+        require(ok, "fund failed");
+        vm.stopPrank();
+
+        for (uint256 i; i < 24; ++i) {
+            assertEq(IERC721(NOUNS).ownerOf(ids[i]), address(mgr));
+        }
+        assertEq(address(mgr).balance - mgrBalBefore, 30 ether);
+
+        // and the program is startable: list one at proposal pricing
+        vm.prank(OPERATOR);
+        mgr.list(11, 1.22 ether);
     }
 }
