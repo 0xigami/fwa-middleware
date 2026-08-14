@@ -28,7 +28,7 @@ In July 2026 I forked FWA onto Robinhood Chain as [StockRip](https://stockrip.co
 
 The treasury holds 604 Nouns and gains one every day. Since the reserve went to 2.8 ETH in April, 101 of the last 102 auctions ended with zero bids: 26 Nouns burned, 75 swept into the treasury, one single winner. The treasury's ~4,000 ETH is mostly staked and earning. Its 604 Nouns earn nothing.
 
-FWA is the busiest NFT machine on Ethereum right now: ~2,900 draws a day, ~236 ETH a day in draw fees, 6,100+ active listings (measured onchain, methodology at the bottom). Nouns is already whitelisted as collection #17. The machine is running either way. This proposal puts 24 of our idle Nouns inside it, earning, and in front of people.
+FWA is the busiest NFT machine on Ethereum: ~1,300 draws and ~100 ETH in draw fees a day across 6,200+ active listings as of 2026-08-14, down from ~2,900 draws the day before as post-emissions volume settles (measured onchain, methodology at the bottom). Nouns is already whitelisted as collection #17. The machine is running either way. This proposal puts 24 of our idle Nouns inside it, earning, and in front of people.
 
 ## ⚖️ The true decision
 
@@ -41,10 +41,10 @@ Flippers press the ETH button. Believers keep the Noun. And while they wait to b
 
 ## 📊 The numbers
 
-Everything here is measured from FWA's contracts onchain (six-hour sample on 2026-08-13, extrapolated to daily rates). Verify it, please.
+Everything here is measured from FWA's contracts onchain (six-hour samples, latest 2026-08-14, extrapolated to daily rates). Volume is settling from the emissions peak, so the timeline numbers move with it; the key result in bullet three does not. Verify it, please.
 
-- ~2,900 draws/day at an average price of 0.081 ETH. 98% of every draw fee splits equally across active listings, which works out to **~0.038 ETH per listing per day** at current volume, or ~0.9 ETH/day across our 24
-- Draw odds scale with 1/backing. At 1.22 ETH backing, each Noun's expected time in the pool is **~32 days** at current volume, roughly one draw event across our 24 every day or two
+- ~1,300 draws/day at an average price of ~0.08 ETH. 98% of every draw fee splits equally across active listings, which works out to **~0.016 ETH per listing per day** at current volume, or ~0.4 ETH/day across our 24 (a day earlier it was double: these scale with volume)
+- Draw odds scale with 1/backing. At 1.22 ETH backing, each Noun's expected time in the pool is **~75 days** at current volume (~32 at the prior day's volume), roughly one draw event across our 24 every few days
 - The part worth checking twice: the draw fee is the pool's harmonic mean × 1.025, and draw odds are 1/backing. Those cancel, so **a listing's expected fee income before it is ever drawn ≈ its own backing**, independent of volume and of what everyone else lists
 - Per-Noun branches, in expectation:
   - *Winner keeps the Noun:* ~1.22 ETH earned in fees + backing returned (minus 1% protocol cut). Treasury up ~1.2 ETH, one new Nouner who chose a Noun over cash
