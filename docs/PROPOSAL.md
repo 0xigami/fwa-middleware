@@ -85,9 +85,18 @@ The treasury can't act inside FWA's 24h settlement windows, so a small manager c
 - I'm the operator at launch. The treasury can replace the operator at any time by proposal, and the role can be opened up further later (even permissionless keeper functions) if that's where we want to take it
 - It's reusable. If this experiment earns its keep, a future proposal can load more Nouns into the same audited contract without deploying anything new
 - Governance stays safe: 24 Nouns in escrow shift quorum by roughly 2 votes, quorum snapshots at proposal creation so no live vote is affected, and the impact only shrinks as Nouns supply grows
-- Code public and fork-tested against mainnet state before this goes live
+- Already deployed and [verified on Etherscan](https://etherscan.io/address/0x89ec417Fa93F02926bF9c28316dA4E7d0F28089b#code): `0x89ec417Fa93F02926bF9c28316dA4E7d0F28089b`. What you audit is what executes
 
 Attached transactions send the 24 Nouns and ~30 ETH from the treasury to the manager. I then list each one at floor ÷ the live buyback rate (90% today), priced at listing time; the contract enforces a 1 ETH minimum backing on me, and every listing tx is public and checkable against the formula.
+
+## 🔎 Check my work
+
+Don't trust the claims above, verify them. Everything is public in [the repo](https://github.com/0xigami/fwa-middleware):
+
+- **[27 mainnet-fork tests](https://github.com/0xigami/fwa-middleware/blob/main/contracts/test/NounsListingManager.t.sol)**, including one that replays these exact four proposal actions with all 24 Noun ids against forked mainnet state. Anyone with an RPC can run them
+- **[Security audit](https://github.com/0xigami/fwa-middleware/blob/main/audit-report.md)**: a 222-item checklist walk on top of two earlier review rounds and external review by dev friends. Zero critical, high or medium findings. The one confirmed finding from the adversarial round was fixed before deployment (`pull()` skips ids a concurrent proposal may have moved, so nothing can brick execution)
+- **[A live mainnet dry-run](https://github.com/0xigami/fwa-middleware/blob/main/docs/DRYRUN.md)** of the same bytecode, done with my own ETH and NFT against the real FWA before this proposal went up. Load, list, earn a real fee from a real third-party draw, claim, withdraw, return, sweep: every transaction linked, every wei accounted for, every exit landing at the hardcoded treasury address
+- **[The four transactions themselves](https://github.com/0xigami/fwa-middleware/blob/main/docs/TRANSACTIONS.md)**, pre-encoded with a pre-flight checklist, so what you vote on is byte-for-byte what runs
 
 One Noun, every day, forever. But somebody has to want one. Let's find out who.
 

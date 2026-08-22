@@ -21,3 +21,18 @@ Spec: [docs/SPEC.md](docs/SPEC.md).
 ## Trust model
 
 The operator can manage listings but can never choose a destination: Nouns move only manager ↔ FWA or manager → treasury; ETH moves only manager → FWA (backing) or manager → treasury; ERC20s move only manager → treasury. Treasury-gated `execute()` exists as an escape hatch for FWA interface drift; the operator never gets it.
+
+## Verification trail
+
+Everything a voter needs to check the safety claims, in one place:
+
+| What | Where |
+|-|-|
+| Verified source on Etherscan | [0x89ec417F...089b](https://etherscan.io/address/0x89ec417Fa93F02926bF9c28316dA4E7d0F28089b#code) |
+| Mainnet-fork test suite (27 tests, 4 suites, incl. an exact replay of the 4 proposal actions with all 24 Noun ids) | [contracts/test/NounsListingManager.t.sol](contracts/test/NounsListingManager.t.sol) |
+| Security audit, checklist-driven, 222 items walked: no critical/high/medium findings | [audit-report.md](audit-report.md) |
+| Live mainnet dry-run of the same bytecode: full lifecycle, every tx linked | [docs/DRYRUN.md](docs/DRYRUN.md) |
+| The exact proposal transactions, pre-encoded | [docs/TRANSACTIONS.md](docs/TRANSACTIONS.md) |
+| Design spec incl. adjudicated review items | [docs/SPEC.md](docs/SPEC.md) |
+
+Run the tests yourself: `cd contracts && MAINNET_RPC_URL=<any archive rpc> forge test`. Three review rounds preceded deployment: a manual security pass, a large multi-agent adversarial review (one confirmed finding, fixed: `pull()` now skips ids the treasury no longer owns instead of reverting), and the final checklist audit above.
