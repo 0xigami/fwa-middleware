@@ -10,7 +10,9 @@ const PROPOSAL_RAW = "https://raw.githubusercontent.com/0xigami/fwa-middleware/m
 
 const dataAbi = parseAbi([
   "function createProposalCandidate(address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, string description, string slug, uint256 proposalIdToUpdate) payable",
+  "function updateProposalCandidate(address[] targets, uint256[] values, string[] signatures, bytes[] calldatas, string description, string slug, uint256 proposalIdToUpdate, string reason) payable",
   "function createCandidateCost() view returns (uint256)",
+  "function updateCandidateCost() view returns (uint256)",
 ]);
 const nounsAbi = parseAbi(["function getCurrentVotes(address account) view returns (uint96)"]);
 
@@ -35,6 +37,7 @@ export default function CandidatePage() {
   const [description, setDescription] = useState("");
   const [slug, setSlug] = useState("fake-world-assets");
   const [loadErr, setLoadErr] = useState("");
+  const [updateReason, setUpdateReason] = useState("");
 
   useEffect(() => {
     fetch(PROPOSAL_RAW)
@@ -61,6 +64,19 @@ export default function CandidatePage() {
       functionName: "createProposalCandidate",
       args: [actions.targets, actions.values, actions.signatures, actions.calldatas, description, slug, 0n],
       value: fee,
+    });
+  }
+
+  const { data: updateCost } = useReadContract({ address: DAO_DATA, abi: dataAbi, functionName: "updateCandidateCost" });
+
+  function submitUpdate() {
+    if (!actions) return;
+    writeContract({
+      address: DAO_DATA,
+      abi: dataAbi,
+      functionName: "updateProposalCandidate",
+      args: [actions.targets, actions.values, actions.signatures, actions.calldatas, description, slug, 0n, updateReason],
+      value: votes !== undefined && votes > 0n ? 0n : updateCost ?? 0n,
     });
   }
 
@@ -131,9 +147,19 @@ export default function CandidatePage() {
         </>
       )}
 
-      <div style={{ margin: "1rem 0" }}>
+      <div style={{ margin: "1rem 0", display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap" }}>
         <button className="op-row" disabled={!ready || isPending} onClick={submit}>
           {isPending ? "Sign in wallet..." : `Create candidate${fee > 0n ? ` (${formatEther(fee)} ETH fee)` : ""}`}
+        </button>
+        <span className="muted">or, if this slug already exists:</span>
+        <input
+          placeholder="update reason (shown on the candidate)"
+          value={updateReason}
+          onChange={(e) => setUpdateReason(e.target.value)}
+          style={{ width: 280 }}
+        />
+        <button className="op-row" disabled={!ready || isPending || !updateReason} onClick={submitUpdate}>
+          Update candidate
         </button>
       </div>
 

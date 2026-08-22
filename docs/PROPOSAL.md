@@ -11,7 +11,6 @@ Quick summary:
 - No discounts, no giveaways. Anyone who keeps a Noun turned down its exact cash value to do so
 - Every listing earns an equal share of every draw fee in the protocol, paid to the treasury
 - In expectation, a listing earns back its own backing in fees before it is ever drawn (math below)
-- Ask is ~30 ETH, 0.7% of the treasury
 - Nouns and ETH move through a reusable manager contract whose every exit is hardcoded to the treasury
 
 *Throughout this proposal, "the treasury" means the Nouns DAO treasury, the timelock at [nouns.eth](https://etherscan.io/address/0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71). Full details below...*
