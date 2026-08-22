@@ -44,9 +44,11 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
     return (
       <p className="op-hint">
         Operator?{" "}
-        <button className="btn btn-small" onClick={() => connectors[0] && connect({ connector: connectors[0] })}>
-          Connect wallet
-        </button>
+        {connectors.map((c) => (
+          <button key={c.uid} className="btn btn-small" onClick={() => connect({ connector: c })}>
+            Connect {c.name}
+          </button>
+        ))}
       </p>
     );
   }

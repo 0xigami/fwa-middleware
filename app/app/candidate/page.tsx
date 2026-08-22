@@ -77,7 +77,13 @@ export default function CandidatePage() {
       {!MANAGER && <p className="badge b-hot">NEXT_PUBLIC_MANAGER_ADDRESS is unset. Set it and restart.</p>}
 
       {!isConnected ? (
-        <button className="op-row" onClick={() => connect({ connector: connectors[0] })}>Connect wallet</button>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+          {connectors.map((c) => (
+            <button key={c.uid} className="op-row" onClick={() => connect({ connector: c })}>
+              Connect {c.name}
+            </button>
+          ))}
+        </div>
       ) : (
         <p className="muted">
           Connected {shortAddr(address!)} · {votes !== undefined ? `${votes} votes` : "reading votes..."} ·{" "}
