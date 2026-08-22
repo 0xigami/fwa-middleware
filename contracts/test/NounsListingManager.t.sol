@@ -40,7 +40,7 @@ contract NounsListingManagerForkTest is Test {
     NounsListingManager mgr;
 
     function setUp() public virtual {
-        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 25751316);
+        vm.createSelectFork(vm.envString("MAINNET_RPC_URL"), 25809242);
         mgr = new NounsListingManager(NOUNS, FWA, REWARDS, TREASURY, OPERATOR, 1 ether);
         vm.deal(TREASURY, TREASURY.balance + 40 ether);
     }
