@@ -73,11 +73,11 @@ Encoded args:
 | signature | (empty) |
 | calldata | `0x` |
 
-30 ETH = 24 × ~1.22 ETH backing (floor ÷ live buyback rate, priced at listing time) plus buffer. Any unlisted remainder is sweepable only to the treasury.
+30 ETH ≈ 24 × ~1.28 ETH backing (floor ÷ live buyback rate, priced at listing time). If floor drift at listing time exceeds the ask, the tail of the pyramid lists as the first backing refunds cycle back. Any unlisted remainder is sweepable only to the treasury.
 
 ## Pre-flight checklist
 
 1. Re-verify all 24 ids are treasury-owned immediately before creating AND before executing the proposal.
-2. Re-read FWA `settlementDiscountBps` (was 9000) and Nouns floor; confirm ~1.22 backing still clears the manager's 1 ETH `MIN_BACKING`.
+2. Re-read FWA `settlementDiscountBps` (was 9000) and Nouns floor; recompute backing = floor ÷ (bps/10000) (~1.28 as of 2026-08-22) and confirm it clears the manager's 1 ETH `MIN_BACKING`.
 3. Confirm Nouns still whitelisted on FWA and `withdrawOnly` is off.
 4. Operator lists within days of execution; every listing tx public and checkable against floor ÷ rate.

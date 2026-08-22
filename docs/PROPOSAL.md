@@ -7,7 +7,7 @@
 Quick summary:
 
 - Send 24 treasury Nouns into [fwa.fun](https://fwa.fun), the onchain gacha machine
-- Each backed with ~1.22 ETH so a winner nets exactly the same whether they keep the Noun or take the ETH
+- Each backed with ~1.28 ETH so a winner nets exactly the same whether they keep the Noun or take the ETH
 - No discounts, no giveaways. Anyone who keeps a Noun turned down its exact cash value to do so
 - Every listing earns an equal share of every draw fee in the protocol, paid to the treasury
 - In expectation, a listing earns back its own backing in fees before it is ever drawn (math below)
@@ -26,13 +26,13 @@ In July 2026 I forked FWA onto Robinhood Chain as [StockRip](https://stockrip.co
 
 ## 🎰 Why
 
-The treasury holds 604 Nouns and gains one every day. Since the reserve went to 2.8 ETH in April, 101 of the last 102 auctions ended with zero bids: 26 Nouns burned, 75 swept into the treasury, one single winner. The treasury's ~4,000 ETH is mostly staked and earning. Its 604 Nouns earn nothing.
+The treasury holds 613 Nouns and gains one every day. Since the reserve went to 2.8 ETH in April, 101 of the 102 auctions through mid-August ended with zero bids: 26 Nouns burned, 75 swept into the treasury, one single winner. The treasury's ~4,000 ETH is mostly staked and earning. Its 604 Nouns earn nothing.
 
-FWA is the busiest NFT machine on Ethereum: ~1,300 draws and ~100 ETH in draw fees a day across 6,200+ active listings as of 2026-08-14, down from ~2,900 draws the day before as post-emissions volume settles (measured onchain, methodology at the bottom). Nouns is already whitelisted as collection #17. The machine is running either way. This proposal puts 24 of our idle Nouns inside it, earning, and in front of people.
+FWA is doing ~310 draws and ~25 ETH in draw fees a day across 6,400+ active listings as of 2026-08-22, down from a ~2,900-draw peak as post-emissions volume settles (measured onchain, methodology at the bottom). Nouns is already whitelisted as collection #17. The machine is running either way. This proposal puts 24 of our idle Nouns inside it, earning, and in front of people.
 
 ## ⚖️ The true decision
 
-Each Noun is listed with backing set to floor ÷ 0.9 (~1.22 ETH at time of writing, set precisely at listing time). FWA pays a winner 90% of backing if they hand the NFT back, so at this level the choice is perfectly balanced. Draw one and you choose:
+Each Noun is listed with backing set to floor ÷ 0.9 (~1.28 ETH at time of writing, set precisely at listing time). FWA pays a winner 90% of backing if they hand the NFT back, so at this level the choice is perfectly balanced. Draw one and you choose:
 
 - **Keep the Noun.** You just turned down ETH worth exactly what the Noun fetches at floor. You want this.
 - **Take the ETH.** Same value, none of the hassle of selling. The Noun goes straight back to the treasury.
@@ -41,14 +41,14 @@ Flippers press the ETH button. Believers keep the Noun. And while they wait to b
 
 ## 📊 The numbers
 
-Everything here is measured from FWA's contracts onchain (six-hour samples, latest 2026-08-14, extrapolated to daily rates). Volume is settling from the emissions peak, so the timeline numbers move with it; the key result in bullet three does not. Verify it, please.
+Everything here is measured from FWA's contracts onchain (latest: a full 24-hour sample ending 2026-08-22). Volume has kept settling since emissions ended, so the timeline numbers move with it; the key result in bullet three does not. Verify it, please.
 
-- ~1,300 draws/day at an average price of ~0.08 ETH. 98% of every draw fee splits equally across active listings, which works out to **~0.016 ETH per listing per day** at current volume, or ~0.4 ETH/day across our 24 (a day earlier it was double: these scale with volume)
-- Draw odds scale with 1/backing. At 1.22 ETH backing, each Noun's expected time in the pool is **~75 days** at current volume (~32 at the prior day's volume), roughly one draw event across our 24 every few days
+- ~310 draws/day at an average price of ~0.08 ETH. 98% of every draw fee splits equally across active listings, which works out to **~0.0038 ETH per listing per day** at current volume, or ~0.09 ETH/day across our 24 (a week ago this was 4x, at the emissions peak 10x: these scale with volume)
+- Draw odds scale with 1/backing. At 1.28 ETH backing, each Noun's expected time in the pool is **~11 months** at current volume (it was ~75 days a week ago; the timeline moves inversely with volume, in either direction), roughly one draw event across our 24 every couple of weeks
 - The part worth checking twice: the draw fee is the pool's harmonic mean × 1.025, and draw odds are 1/backing. Those cancel, so **a listing's expected fee income before it is ever drawn ≈ its own backing**, independent of volume and of what everyone else lists
 - Per-Noun branches, in expectation:
-  - *Winner keeps the Noun:* ~1.22 ETH earned in fees + backing returned (minus 1% protocol cut). Treasury up ~1.2 ETH, one new Nouner who chose a Noun over cash
-  - *Winner takes the ETH:* ~1.22 ETH earned in fees, 1.22 ETH of backing paid out. Roughly ETH-neutral, Noun back in the treasury
+  - *Winner keeps the Noun:* ~1.28 ETH earned in fees + backing returned (minus 1% protocol cut). Treasury up ~1.3 ETH, one new Nouner who chose a Noun over cash
+  - *Winner takes the ETH:* ~1.28 ETH earned in fees, 1.28 ETH of backing paid out. Roughly ETH-neutral, Noun back in the treasury
 - Expectation is not a guarantee. A Noun drawn on day 2 earns less than its backing (ask me about Noun 1382). A Noun that sits earns more. That variance is why this is sized at 30 ETH and not 300
 - Not modeled, pure upside: $FWA depositor rewards (30% of the protocol's fee-funded buybacks accrue to depositors)
 - For calibration: across all of FWA in the sample window, winners kept the NFT in ~1.3% of settlements, because most listings are cheap NFTs backed above their value. Ours are the opposite. Keeps will still be the minority, and that's fine: a keep is a new Nouner who wanted in, a buyback is a round trip that paid us fees
@@ -104,4 +104,4 @@ One Noun, every day, forever. But somebody has to want one. Let's find out who.
 
 ---
 
-*Methodology: draw counts and fees from `AcquisitionRequested` events, outcomes from `NFTKept` / `DepositorBidAccepted` events on FWA core `0xB276F62DB0ce8CA2Ca5bc522695bE604521eAc1c`; listing count, total weight and fee parameters read from the same contract; treasury and auction figures from the Nouns token, auction house and treasury. Ask = 24 × 1.22 ETH backing plus a small gas buffer.*
+*Methodology: draw counts and fees from `AcquisitionRequested` events, outcomes from `NFTKept` / `DepositorBidAccepted` events on FWA core `0xB276F62DB0ce8CA2Ca5bc522695bE604521eAc1c`; listing count, total weight and fee parameters read from the same contract; treasury and auction figures from the Nouns token, auction house and treasury. Ask = 30 ETH ≈ 24 × the ~1.28 ETH backing. Backing is priced at listing time; if the floor drifts up before listing, the tail of the pyramid lists as the first backing refunds cycle home, and every unlisted wei is sweepable only to the treasury.*
