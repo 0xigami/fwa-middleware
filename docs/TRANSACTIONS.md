@@ -1,6 +1,6 @@
 # Proposal transactions
 
-Four actions, executed atomically by the Nouns governor through the treasury (timelock). `MANAGER` = the deployed NounsListingManager address (pending deployment, gated on external review). Nouns token: `0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03`.
+Four actions, executed atomically by the Nouns governor through the treasury (timelock). `MANAGER` = `0x89ec417Fa93F02926bF9c28316dA4E7d0F28089b` (NounsListingManager, deployed and Etherscan-verified 2026-08-22 at block 25809417; operator gami.eth, MIN_BACKING 1 ETH). A full lifecycle dry-run of the same bytecode ran on mainnet the same day against live FWA (test instance `0xC5e5B4461c721A217e9d210256435Eae08D72000`, listing 163927): pull → list → fee accrual + claim → withdraw → return → sweep, every wei accounted for. Nouns token: `0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03`.
 
 Nouns proposal convention: when a `signature` is given, `calldata` is the ABI-encoded arguments without selector. An empty signature with empty calldata and a nonzero value is a plain ETH transfer (hits the manager's `receive()`).
 

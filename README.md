@@ -13,6 +13,7 @@ Spec: [docs/SPEC.md](docs/SPEC.md).
 
 | | |
 |-|-|
+| NounsListingManager (deployed + verified 2026-08-22) | 0x89ec417Fa93F02926bF9c28316dA4E7d0F28089b |
 | Nouns token | 0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03 |
 | Nouns treasury (timelock, nouns.eth) | 0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71 |
 | FWA core | 0xB276F62DB0ce8CA2Ca5bc522695bE604521eAc1c |
