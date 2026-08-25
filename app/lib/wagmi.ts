@@ -32,11 +32,14 @@ export function txUrl(hash: string, chain = TARGET_CHAIN): string {
 }
 
 export function getConfig() {
+  const useWalletConnect =
+    typeof window !== "undefined" && Boolean(walletConnectProjectId);
+
   return createConfig({
     chains: [TARGET_CHAIN, mainnet],
     connectors: [
       injected(),
-      ...(walletConnectProjectId
+      ...(useWalletConnect
         ? [
             walletConnect({
               projectId: walletConnectProjectId,
