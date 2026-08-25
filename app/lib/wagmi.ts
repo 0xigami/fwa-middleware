@@ -1,11 +1,7 @@
-import { createConfig, http, injected } from "wagmi";
-import { walletConnect } from "wagmi/connectors";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { http } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { RPC_URL } from "@/lib/config";
-
-/** Rainbow WalletConnect explorer id — iPhone path: WC → Rainbow → Nano X. */
-export const RAINBOW_WALLET_ID =
-  "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369";
 
 /**
  * Ethereum mainnet. NounsListingManager 0x89ec417F…089b and FWA core live here.
@@ -16,51 +12,21 @@ export const TARGET_CHAIN = mainnet;
 export const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.trim() ?? "";
 
+/** RainbowKit requires a 32-char projectId at config time. Empty ID still builds; WC needs the real Reown ID. */
+const RAINBOWKIT_PROJECT_ID =
+  walletConnectProjectId || "00000000000000000000000000000000";
+
 export function txUrl(hash: string, chain = TARGET_CHAIN): string {
   const base = chain.blockExplorers?.default.url ?? "https://etherscan.io";
   return `${base}/tx/${hash}`;
 }
 
-export function getConfig(opts?: { walletConnect?: boolean }) {
-  const useWalletConnect = Boolean(opts?.walletConnect && walletConnectProjectId);
-
-  return createConfig({
-    chains: [TARGET_CHAIN],
-    connectors: [
-      injected(),
-      ...(useWalletConnect
-        ? [
-            walletConnect({
-              projectId: walletConnectProjectId,
-              showQrModal: true,
-              metadata: {
-                name: "FWA Operator",
-                description: "Nouns listing manager operator panel",
-                url: "https://fwa-operator.vercel.app",
-                icons: ["https://noun.pics/11.png"],
-              },
-              qrModalOptions: {
-                enableExplorer: true,
-                explorerRecommendedWalletIds: [RAINBOW_WALLET_ID],
-                explorerExcludedWalletIds: "ALL",
-                mobileWallets: [
-                  {
-                    id: "rainbow",
-                    name: "Rainbow",
-                    links: {
-                      native: "rainbow://",
-                      universal: "https://rnbwapp.com",
-                    },
-                  },
-                ],
-              },
-            }),
-          ]
-        : []),
-    ],
-    transports: {
-      [TARGET_CHAIN.id]: http(RPC_URL),
-    },
-    ssr: true,
-  });
-}
+export const config = getDefaultConfig({
+  appName: "Fake World Assets",
+  projectId: RAINBOWKIT_PROJECT_ID,
+  chains: [TARGET_CHAIN],
+  ssr: true,
+  transports: {
+    [TARGET_CHAIN.id]: http(RPC_URL),
+  },
+});

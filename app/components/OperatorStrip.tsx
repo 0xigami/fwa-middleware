@@ -3,13 +3,10 @@
 import { useEffect, useState } from "react";
 import { parseEther } from "viem";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import { ALL_IDS } from "@/lib/config";
+import { ALL_IDS, MANAGER } from "@/lib/config";
 import { managerAbi } from "@/lib/abis";
 import { fmtEth, type FwaData } from "@/lib/useFwaData";
 import { TARGET_CHAIN, txUrl } from "@/lib/wagmi";
-import { useManagerSettings } from "@/lib/managerSettings";
-import WalletBar from "@/components/WalletBar";
-import ManagerField from "@/components/ManagerField";
 
 const FWA_TOKEN = "0xa0Df17B5aC76ABaBA36E1450E2cbCd18A620C845";
 const DAY = 86400;
@@ -24,7 +21,6 @@ function Countdown({ allocatedAt }: { allocatedAt: number }) {
 }
 
 export default function OperatorStrip({ data }: { data: FwaData }) {
-  const { manager } = useManagerSettings();
   const { address, isConnected, chainId } = useAccount();
   const { writeContract, isPending, error, data: txHash } = useWriteContract();
   const { isSuccess: txConfirmed } = useWaitForTransactionReceipt({ hash: txHash });
@@ -41,7 +37,7 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
       .catch(() => {});
   }, []);
 
-  const preview = !manager;
+  const preview = !MANAGER;
   const isOperator = isConnected && !!data.operator && address?.toLowerCase() === data.operator.toLowerCase();
   const onTargetChain = chainId === TARGET_CHAIN.id;
   const showConsole = preview || isOperator;
@@ -49,9 +45,9 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
   const off = isPending || preview || (isConnected && !onTargetChain);
   const backing = floorWei && data.discountBps > 0n ? (floorWei * 10000n) / data.discountBps : undefined;
   const call = (functionName: string, args?: readonly unknown[]) => {
-    if (!manager) return;
+    if (!MANAGER) return;
     writeContract({
-      address: manager,
+      address: MANAGER,
       abi: managerAbi,
       functionName,
       args,
@@ -63,8 +59,6 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
 
   return (
     <>
-      <ManagerField />
-      <WalletBar operator={data.operator} />
       {showConsole && (
         <section className="op-strip">
       <h2>Operator console{preview ? " (preview: manager not deployed yet)" : ""}</h2>
