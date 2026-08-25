@@ -5,6 +5,11 @@ import { parseEther } from "viem";
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { ALL_IDS, MANAGER } from "@/lib/config";
 import { managerAbi } from "@/lib/abis";
+import {
+  formatBackingPlaceholder,
+  resolveListBacking,
+  suggestedBackingWei,
+} from "@/lib/listBacking";
 import { fmtEth, type FwaData } from "@/lib/useFwaData";
 import { TARGET_CHAIN, txUrl } from "@/lib/wagmi";
 
@@ -26,6 +31,8 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
   const { isSuccess: txConfirmed } = useWaitForTransactionReceipt({ hash: txHash });
   const [floorWei, setFloorWei] = useState<bigint>();
   const [repeg, setRepeg] = useState<Record<number, string>>({});
+  const [listBacking, setListBacking] = useState<Record<number, string>>({});
+  const [listErrors, setListErrors] = useState<Record<number, string>>({});
 
   useEffect(() => {
     fetch("https://api.coingecko.com/api/v3/nfts/nouns")
@@ -43,7 +50,8 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
   const showConsole = preview || isOperator;
 
   const off = isPending || preview || (isConnected && !onTargetChain);
-  const backing = floorWei && data.discountBps > 0n ? (floorWei * 10000n) / data.discountBps : undefined;
+  const backing = suggestedBackingWei(floorWei, data.discountBps);
+  const placeholder = backing ? formatBackingPlaceholder(backing) : "";
   const call = (functionName: string, args?: readonly unknown[]) => {
     if (!MANAGER) return;
     writeContract({
@@ -56,6 +64,20 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
   };
 
   const listingIds = Object.values(data.listingIdByToken);
+
+  const onList = (id: number) => {
+    const resolved = resolveListBacking(listBacking[id] ?? "", backing);
+    if ("error" in resolved) {
+      setListErrors((prev) => ({ ...prev, [id]: resolved.error }));
+      return;
+    }
+    setListErrors((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+    call("list", [BigInt(id), resolved.wei]);
+  };
 
   return (
     <>
@@ -84,12 +106,44 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
               <span className="op-noun">Noun {id}</span>
               {(kind === "manager" || preview) && (
                 <>
-                  <button className="btn btn-small" disabled={off || !backing} onClick={() => backing && call("list", [BigInt(id), backing])}>
-                    List at {backing ? fmtEth(backing) : "floor ÷ rate"}
+                  <label className="op-backing">
+                    <span className="sr-only">Noun {id} ETH backing</span>
+                    <input
+                      className="op-input"
+                      type="text"
+                      inputMode="decimal"
+                      enterKeyHint="done"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      spellCheck={false}
+                      placeholder={placeholder || "ETH backing"}
+                      value={listBacking[id] ?? ""}
+                      aria-invalid={Boolean(listErrors[id])}
+                      aria-describedby={listErrors[id] ? `list-error-${id}` : undefined}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setListBacking((prev) => ({ ...prev, [id]: value }));
+                        setListErrors((prev) => {
+                          if (!prev[id]) return prev;
+                          const next = { ...prev };
+                          delete next[id];
+                          return next;
+                        });
+                      }}
+                    />
+                    <span className="muted">ETH</span>
+                  </label>
+                  <button className="btn btn-small" disabled={off} onClick={() => onList(id)}>
+                    List
                   </button>
                   <button className="btn btn-small" disabled={off} onClick={() => call("returnNouns", [[BigInt(id)]])}>
                     Return home
                   </button>
+                  {listErrors[id] ? (
+                    <p className="op-error op-row-error" id={`list-error-${id}`} role="alert">
+                      {listErrors[id]}
+                    </p>
+                  ) : null}
                 </>
               )}
               {kind === "listed" && listingId !== undefined && (

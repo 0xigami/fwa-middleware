@@ -23,7 +23,7 @@ The listing manager is public config: set `MANAGER_ADDRESS` in `lib/config.ts` o
 
 ## Operator strip
 
-CONNECT (top right) opens RainbowKit: injected wallets on laptop, same modal with WalletConnect on phone. Operator txs target Ethereum mainnet. If the connected address matches `manager.operator()`, per-Noun buttons appear: list at floor divided by the FWA settlement discount (floor from CoinGecko), withdraw listing, return home, plus sweep/claim buttons. Anything fancier: Etherscan is the fallback console.
+CONNECT (top right) opens RainbowKit: injected wallets on laptop, same modal with WalletConnect on phone. Operator txs target Ethereum mainnet. If the connected address matches `manager.operator()`, each Noun gets an ETH backing field (placeholder is floor ÷ the live FWA buyback rate; empty still lists at that suggestion) and List / Return home, plus withdraw and sweep/claim. List is rejected in the UI below 1 ETH. Anything fancier: Etherscan is the fallback console.
 
 ## Deploy (Vercel)
 
