@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { parseEther } from "viem";
-import { useAccount, useConnect, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { ALL_IDS, MANAGER } from "@/lib/config";
 import { managerAbi } from "@/lib/abis";
 import { fmtEth, type FwaData } from "@/lib/useFwaData";
+import { TARGET_CHAIN } from "@/lib/wagmi";
+import WalletBar from "@/components/WalletBar";
 
 const FWA_TOKEN = "0xa0Df17B5aC76ABaBA36E1450E2cbCd18A620C845";
 const DAY = 86400;
@@ -20,8 +22,7 @@ function Countdown({ allocatedAt }: { allocatedAt: number }) {
 }
 
 export default function OperatorStrip({ data }: { data: FwaData }) {
-  const { address, isConnected } = useAccount();
-  const { connect, connectors } = useConnect();
+  const { address, isConnected, chainId } = useAccount();
   const { writeContract, isPending, error, data: txHash } = useWriteContract();
   const { isSuccess: txConfirmed } = useWaitForTransactionReceipt({ hash: txHash });
   const [floorWei, setFloorWei] = useState<bigint>();
@@ -39,22 +40,13 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
 
   const preview = !MANAGER;
   const isOperator = isConnected && !!data.operator && address?.toLowerCase() === data.operator.toLowerCase();
+  const onTargetChain = chainId === TARGET_CHAIN.id;
 
-  if (!preview && !isConnected) {
-    return (
-      <p className="op-hint">
-        Operator?{" "}
-        {connectors.map((c) => (
-          <button key={c.uid} className="btn btn-small" onClick={() => connect({ connector: c })}>
-            Connect {c.name}
-          </button>
-        ))}
-      </p>
-    );
+  if (!preview && !isOperator) {
+    return <WalletBar operator={data.operator} />;
   }
-  if (!preview && !isOperator) return null;
 
-  const off = isPending || preview;
+  const off = isPending || preview || (isConnected && !onTargetChain);
   const backing = floorWei && data.discountBps > 0n ? (floorWei * 10000n) / data.discountBps : undefined;
   const call = (functionName: string, args?: readonly unknown[]) =>
     writeContract({ address: MANAGER!, abi: managerAbi, functionName, args } as Parameters<typeof writeContract>[0]);
@@ -62,7 +54,9 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
   const listingIds = Object.values(data.listingIdByToken);
 
   return (
-    <section className="op-strip">
+    <>
+      {!preview && <WalletBar operator={data.operator} />}
+      <section className="op-strip">
       <h2>Operator console{preview ? " (preview: manager not deployed yet)" : ""}</h2>
       <p className="muted">
         Floor {floorWei ? fmtEth(floorWei) : "n/a"} · buyback rate {Number(data.discountBps) / 100}% · list backing = floor ÷ {Number(data.discountBps) / 10000} = {backing ? fmtEth(backing) : "n/a"}
@@ -147,6 +141,7 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
         </p>
       )}
       {error && <p className="op-error">{error.message.split("\n")[0]}</p>}
-    </section>
+      </section>
+    </>
   );
 }

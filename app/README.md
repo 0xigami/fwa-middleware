@@ -19,14 +19,15 @@ Before the manager is deployed, leave `NEXT_PUBLIC_MANAGER_ADDRESS` unset: the p
 | `NEXT_PUBLIC_MANAGER_ADDRESS` | NounsListingManager address (unset pre-deploy) |
 | `NEXT_PUBLIC_START_BLOCK` | Manager deploy block, bounds event scans (defaults to latest minus 1M blocks) |
 | `NEXT_PUBLIC_RPC` | Optional RPC override (default: https://ethereum-rpc.publicnode.com) |
+| `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` | Reown Cloud project ID for WalletConnect. Set in Vercel; never commit a real ID. |
 
 ## Operator strip
 
-Connect an injected wallet. If the address matches `manager.operator()`, per-Noun buttons appear: list at floor divided by the FWA settlement discount (floor from CoinGecko), withdraw listing, return home, plus sweep/claim buttons. Anything fancier: Etherscan is the fallback console.
+Connect a browser wallet (if one is injected) or WalletConnect. On a phone, WalletConnect opens the Reown modal (QR / deep link) so Ledger Live and other wallets can sign without a browser extension. If the address matches `manager.operator()`, per-Noun buttons appear: list at floor divided by the FWA settlement discount (floor from CoinGecko), withdraw listing, return home, plus sweep/claim buttons. Wrong-network is called out; txs target Ethereum mainnet. Anything fancier: Etherscan is the fallback console.
 
 ## Deploy (Vercel)
 
-Root directory `app/`, framework Next.js, `pnpm build`. Set the three env vars in the Vercel project. Redeploy after the manager contract goes live to bake in the address.
+Root directory `app/`, framework Next.js, `pnpm build`. Set the env vars in the Vercel project (including `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`). Redeploy after the manager contract goes live to bake in the address.
 
 ## Notes
 

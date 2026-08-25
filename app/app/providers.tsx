@@ -1,18 +1,12 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider, createConfig, http, injected } from "wagmi";
-import { mainnet } from "wagmi/chains";
+import { WagmiProvider } from "wagmi";
 import { useState } from "react";
-import { RPC_URL } from "@/lib/config";
-
-const config = createConfig({
-  chains: [mainnet],
-  connectors: [injected()],
-  transports: { [mainnet.id]: http(RPC_URL) },
-});
+import { getConfig } from "@/lib/wagmi";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
+  const [config] = useState(() => getConfig());
   const [queryClient] = useState(() => new QueryClient());
   return (
     <WagmiProvider config={config}>
