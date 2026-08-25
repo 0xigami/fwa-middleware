@@ -31,9 +31,8 @@ export function txUrl(hash: string, chain = TARGET_CHAIN): string {
   return `${base}/tx/${hash}`;
 }
 
-export function getConfig() {
-  const useWalletConnect =
-    typeof window !== "undefined" && Boolean(walletConnectProjectId);
+export function getConfig(opts?: { walletConnect?: boolean }) {
+  const useWalletConnect = Boolean(opts?.walletConnect && walletConnectProjectId);
 
   return createConfig({
     chains: [TARGET_CHAIN, mainnet],
