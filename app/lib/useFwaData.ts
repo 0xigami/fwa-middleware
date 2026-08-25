@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createPublicClient, formatEther, http, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
 import {
-  ALL_IDS, FWA_CORE, MANAGER, NOUNS_TOKEN, RPC_URL, START_BLOCK, TREASURY, shortAddr,
+  ALL_IDS, FWA_CORE, NOUNS_TOKEN, RPC_URL, TREASURY, shortAddr,
 } from "./config";
 import {
   evAllocated, evBidAccepted, evKept, evListed, evNounReturned, evSweptETH, evWithdrawn,
@@ -47,7 +47,7 @@ const initial: FwaData = {
   stats: {},
 };
 
-async function fetchAll(): Promise<FwaData> {
+async function fetchAll(managerAddr?: Address, startBlock?: bigint): Promise<FwaData> {
   const owners = await client.multicall({
     contracts: ALL_IDS.map((id) => ({
       address: NOUNS_TOKEN, abi: nounsAbi, functionName: "ownerOf" as const, args: [BigInt(id)] as const,
@@ -56,22 +56,22 @@ async function fetchAll(): Promise<FwaData> {
 
   const data: FwaData = { ...initial, loading: false, statuses: {}, stats: {} };
 
-  if (!MANAGER) {
+  if (!managerAddr) {
     for (const id of ALL_IDS) data.statuses[id] = { kind: "treasury" };
     return data;
   }
-  const manager = MANAGER;
+  const manager = managerAddr;
 
   const latest = await client.getBlockNumber();
-  const fromBlock = START_BLOCK ?? (latest > 1_000_000n ? latest - 1_000_000n : 0n);
+  const fromBlock = startBlock ?? (latest > 1_000_000n ? latest - 1_000_000n : 0n);
   const range = { fromBlock, toBlock: latest } as const;
 
   const [managerLogs, views] = await Promise.all([
-    client.getLogs({ address: MANAGER, events: [evListed, evNounReturned, evSweptETH], ...range }),
+    client.getLogs({ address: manager, events: [evListed, evNounReturned, evSweptETH], ...range }),
     client.multicall({
       contracts: [
-        { address: MANAGER, abi: managerAbi, functionName: "operator" as const },
-        { address: FWA_CORE, abi: fwaAbi, functionName: "feeCredit" as const, args: [MANAGER] as const },
+        { address: manager, abi: managerAbi, functionName: "operator" as const },
+        { address: FWA_CORE, abi: fwaAbi, functionName: "feeCredit" as const, args: [manager] as const },
         { address: FWA_CORE, abi: fwaAbi, functionName: "settlementDiscountBps" as const },
       ],
     }),
@@ -179,14 +179,20 @@ async function fetchAll(): Promise<FwaData> {
   return data;
 }
 
-export function useFwaData(): FwaData {
+export function useFwaData(manager?: Address, startBlock?: bigint): FwaData {
   const [data, setData] = useState<FwaData>(initial);
   useEffect(() => {
     let alive = true;
-    const run = () => fetchAll().then((d) => alive && setData(d)).catch((e) => console.error("fwa fetch", e));
+    const run = () =>
+      fetchAll(manager, startBlock)
+        .then((d) => alive && setData(d))
+        .catch((e) => console.error("fwa fetch", e));
     run();
     const t = setInterval(run, 60_000);
-    return () => { alive = false; clearInterval(t); };
-  }, []);
+    return () => {
+      alive = false;
+      clearInterval(t);
+    };
+  }, [manager, startBlock]);
   return data;
 }

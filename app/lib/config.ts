@@ -4,14 +4,25 @@ export const NOUNS_TOKEN: Address = "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03"
 export const TREASURY: Address = "0xb1a32FC9F9D8b2cf86C068Cae13108809547ef71";
 export const FWA_CORE: Address = "0xB276F62DB0ce8CA2Ca5bc522695bE604521eAc1c";
 
-const managerEnv = process.env.NEXT_PUBLIC_MANAGER_ADDRESS ?? "";
-export const MANAGER: Address | undefined = /^0x[0-9a-fA-F]{40}$/.test(managerEnv)
-  ? (managerEnv as Address)
-  : undefined;
+export function parseManagerAddress(raw: string): Address | undefined {
+  const s = raw.trim();
+  return /^0x[0-9a-fA-F]{40}$/.test(s) ? (s as Address) : undefined;
+}
 
-export const START_BLOCK: bigint | undefined = process.env.NEXT_PUBLIC_START_BLOCK
-  ? BigInt(process.env.NEXT_PUBLIC_START_BLOCK)
-  : undefined;
+export function parseStartBlock(raw: string): bigint | undefined {
+  const s = raw.trim();
+  if (!s) return undefined;
+  if (!/^\d+$/.test(s)) return undefined;
+  try {
+    return BigInt(s);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Optional local override only. Do not set on Vercel. */
+export const MANAGER_ENV = parseManagerAddress(process.env.NEXT_PUBLIC_MANAGER_ADDRESS ?? "");
+export const START_BLOCK_ENV = parseStartBlock(process.env.NEXT_PUBLIC_START_BLOCK ?? "");
 
 export const RPC_URL =
   process.env.NEXT_PUBLIC_RPC || "https://ethereum-rpc.publicnode.com";

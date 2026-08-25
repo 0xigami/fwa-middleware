@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import WalletBar from "@/components/WalletBar";
+import ManagerField from "@/components/ManagerField";
 import { encodeAbiParameters, parseAbi, parseEther, formatEther } from "viem";
-import { ALL_IDS, MANAGER, NOUNS_TOKEN, shortAddr } from "@/lib/config";
+import { ALL_IDS, NOUNS_TOKEN, shortAddr } from "@/lib/config";
+import { useManagerSettings } from "@/lib/managerSettings";
 
 const DAO_DATA = "0xf790A5f59678dd733fb3De93493A91f472ca1365" as const;
 const PROPOSAL_RAW = "https://raw.githubusercontent.com/0xigami/fwa-middleware/main/docs/PROPOSAL.md";
@@ -30,6 +32,7 @@ function buildActions(manager: `0x${string}`) {
 }
 
 export default function CandidatePage() {
+  const { manager } = useManagerSettings();
   const { address, isConnected } = useAccount();
   const { writeContract, isPending, error, data: txHash } = useWriteContract();
   const receipt = useWaitForTransactionReceipt({ hash: txHash });
@@ -52,7 +55,7 @@ export default function CandidatePage() {
     args: address ? [address] : undefined, query: { enabled: !!address },
   });
 
-  const actions = useMemo(() => (MANAGER ? buildActions(MANAGER) : undefined), []);
+  const actions = useMemo(() => (manager ? buildActions(manager) : undefined), [manager]);
   const fee = votes !== undefined && votes > 0n ? 0n : cost ?? 0n;
   const ready = !!actions && description.length > 0 && slug.length > 0 && isConnected;
 
@@ -90,8 +93,8 @@ export default function CandidatePage() {
         <code>createProposalCandidate</code> on the Nouns DAO data contract ({shortAddr(DAO_DATA)}).
       </p>
 
-      {!MANAGER && <p className="badge b-hot">NEXT_PUBLIC_MANAGER_ADDRESS is unset. Set it and restart.</p>}
-
+      {!manager && <p className="badge b-hot">Paste the listing manager address on the operator panel first.</p>}
+      <ManagerField />
       <WalletBar />
       {isConnected && (
         <p className="muted">

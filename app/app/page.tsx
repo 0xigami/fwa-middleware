@@ -1,7 +1,8 @@
 "use client";
 
-import { MANAGER, PYRAMID_ROWS, shortAddr } from "@/lib/config";
+import { PYRAMID_ROWS, shortAddr } from "@/lib/config";
 import { fmtEth, useFwaData, type NounStatus } from "@/lib/useFwaData";
+import { useManagerSettings } from "@/lib/managerSettings";
 import OperatorStrip from "@/components/OperatorStrip";
 
 function Badge({ status }: { status: NounStatus }) {
@@ -29,9 +30,10 @@ function Tile({ label, value }: { label: string; value: string }) {
 }
 
 export default function Page() {
-  const data = useFwaData();
+  const { manager, startBlock } = useManagerSettings();
+  const data = useFwaData(manager, startBlock);
   const { stats } = data;
-  const preDeploy = !MANAGER;
+  const preDeploy = !manager;
   const na = "n/a";
 
   return (
@@ -68,7 +70,7 @@ export default function Page() {
 
       <section className="feed">
         <h2>What happened onchain</h2>
-        {preDeploy && <p className="muted">Nothing yet. The manager contract is not deployed. All 24 Nouns sit in the treasury.</p>}
+        {preDeploy && <p className="muted">Nothing yet. Paste the listing manager after proposal 992 executes. All 24 Nouns sit in the treasury until then.</p>}
         {!preDeploy && data.feed.length === 0 && !data.loading && <p className="muted">No activity yet.</p>}
         {data.loading && !preDeploy && <p className="muted">Reading the chain...</p>}
         <ul>
