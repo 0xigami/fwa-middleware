@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.83.0",
+    "@walletconnect/ethereum-provider": "^2.23.10",
     "next": "^15.4.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -21,6 +22,15 @@
     "typescript": "^5.8.3"
   },
   "pnpm": {
-    "ignoredBuiltDependencies": ["bufferutil", "keccak", "sharp", "utf-8-validate"]
+    "overrides": {
+      "@walletconnect/ethereum-provider": "2.23.10",
+      "@walletconnect/logger>pino": "10.0.0"
+    },
+    "ignoredBuiltDependencies": [
+      "bufferutil",
+      "keccak",
+      "sharp",
+      "utf-8-validate"
+    ]
   }
 }

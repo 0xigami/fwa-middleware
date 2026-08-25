@@ -1,21 +1,25 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider, createConfig, http, injected } from "wagmi";
-import { mainnet } from "wagmi/chains";
-import { useState } from "react";
-import { RPC_URL } from "@/lib/config";
-
-const config = createConfig({
-  chains: [mainnet],
-  connectors: [injected()],
-  transports: { [mainnet.id]: http(RPC_URL) },
-});
+import { WagmiProvider } from "wagmi";
+import { useEffect, useMemo, useState } from "react";
+import { getConfig } from "@/lib/wagmi";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
+  const [walletConnectReady, setWalletConnectReady] = useState(false);
+
+  useEffect(() => {
+    setWalletConnectReady(true);
+  }, []);
+
+  const config = useMemo(
+    () => getConfig({ walletConnect: walletConnectReady }),
+    [walletConnectReady],
+  );
+
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={config} key={walletConnectReady ? "wc" : "ssr"}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );

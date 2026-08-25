@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useAccount, useConnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import WalletBar from "@/components/WalletBar";
 import { encodeAbiParameters, parseAbi, parseEther, formatEther } from "viem";
 import { ALL_IDS, MANAGER, NOUNS_TOKEN, shortAddr } from "@/lib/config";
 
@@ -30,7 +31,6 @@ function buildActions(manager: `0x${string}`) {
 
 export default function CandidatePage() {
   const { address, isConnected } = useAccount();
-  const { connect, connectors } = useConnect();
   const { writeContract, isPending, error, data: txHash } = useWriteContract();
   const receipt = useWaitForTransactionReceipt({ hash: txHash });
 
@@ -92,17 +92,10 @@ export default function CandidatePage() {
 
       {!MANAGER && <p className="badge b-hot">NEXT_PUBLIC_MANAGER_ADDRESS is unset. Set it and restart.</p>}
 
-      {!isConnected ? (
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-          {connectors.map((c) => (
-            <button key={c.uid} className="op-row" onClick={() => connect({ connector: c })}>
-              Connect {c.name}
-            </button>
-          ))}
-        </div>
-      ) : (
+      <WalletBar />
+      {isConnected && (
         <p className="muted">
-          Connected {shortAddr(address!)} · {votes !== undefined ? `${votes} votes` : "reading votes..."} ·{" "}
+          {votes !== undefined ? `${votes} votes` : "reading votes..."} ·{" "}
           {fee === 0n ? "candidate fee waived (nouner)" : `fee ${formatEther(fee)} ETH (no votes at snapshot)`}
         </p>
       )}
