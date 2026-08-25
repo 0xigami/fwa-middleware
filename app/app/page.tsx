@@ -1,23 +1,10 @@
 "use client";
 
-import { ALL_IDS, MANAGER, shortAddr } from "@/lib/config";
-import { fmtEth, useFwaData, type NounStatus } from "@/lib/useFwaData";
+import { ALL_IDS, MANAGER } from "@/lib/config";
+import { useFwaData } from "@/lib/useFwaData";
+import { OperatorProvider } from "@/components/OperatorProvider";
 import OperatorStrip from "@/components/OperatorStrip";
-
-function Badge({ status }: { status: NounStatus }) {
-  switch (status.kind) {
-    case "treasury": return <span className="badge b-idle">In treasury</span>;
-    case "manager": return <span className="badge b-warm">Held by manager</span>;
-    case "listed": return <span className="badge b-live">Listed {fmtEth(status.backing)}</span>;
-    case "settlement": {
-      const left = status.allocatedAt + 7 * 86400 - Math.floor(Date.now() / 1000);
-      const hours = Math.max(1, Math.floor(left / 3600));
-      return <span className="badge b-hot">{left > 0 ? `in settlement, ${hours}h to decide` : "settlement overdue"}</span>;
-    }
-    case "kept": return <span className="badge b-gone">Kept by {shortAddr(status.by)}</span>;
-    case "home": return <span className="badge b-home">Home</span>;
-  }
-}
+import NounCard from "@/components/NounCard";
 
 function Tile({ label, value }: { label: string; value: string }) {
   return (
@@ -35,48 +22,48 @@ export default function Page() {
   const na = "n/a";
 
   return (
-    <main className="main">
-      <h1 className="title">Fake World Assets</h1>
-      <p className="subtitle">
-        24 Nouns from the treasury, listed on <a href="https://fwa.fun" target="_blank" rel="noreferrer">fwa.fun</a> at
-        floor divided by 0.9. Every exit path is hardcoded back home. Watch it live.
-      </p>
+    <OperatorProvider data={data}>
+      <main className="main">
+        <h1 className="title">Fake World Assets</h1>
 
-      <div className="noun-grid">
-        {ALL_IDS.map((id) => (
-          <div className="noun-card" key={id}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`https://noun.pics/${id}.png?size=96`} alt={`Noun ${id}`} width={96} height={96} />
-            <div className="noun-id">Noun {id}</div>
-            <Badge status={data.statuses[id] ?? { kind: "treasury" }} />
-          </div>
-        ))}
-      </div>
+        <div className="tiles">
+          <Tile label="Fees earned" value={preDeploy ? na : stats.fees ?? na} />
+          <Tile label="Draws across the fleet" value={preDeploy ? na : String(stats.draws ?? 0)} />
+          <Tile label="Keeps vs buybacks" value={preDeploy ? na : `${stats.keeps ?? 0} vs ${stats.buybacks ?? 0}`} />
+          <Tile label="Days live" value={preDeploy || stats.daysLive === undefined ? na : String(stats.daysLive)} />
+        </div>
 
-      <div className="tiles">
-        <Tile label="Fees earned" value={preDeploy ? na : stats.fees ?? na} />
-        <Tile label="Draws across the fleet" value={preDeploy ? na : String(stats.draws ?? 0)} />
-        <Tile label="Keeps vs buybacks" value={preDeploy ? na : `${stats.keeps ?? 0} vs ${stats.buybacks ?? 0}`} />
-        <Tile label="Days live" value={preDeploy || stats.daysLive === undefined ? na : String(stats.daysLive)} />
-      </div>
+        <OperatorStrip />
 
-      <OperatorStrip data={data} />
-
-      <section className="feed">
-        <h2>What happened onchain</h2>
-        {preDeploy && <p className="muted">Nothing yet. The manager contract is not in config. All 24 Nouns sit in the treasury.</p>}
-        {!preDeploy && data.feed.length === 0 && !data.loading && <p className="muted">No activity yet.</p>}
-        {data.loading && !preDeploy && <p className="muted">Reading the chain...</p>}
-        <ul>
-          {data.feed.map((item) => (
-            <li key={item.key}>
-              <a href={`https://etherscan.io/tx/${item.tx}`} target="_blank" rel="noreferrer" className="feed-link">
-                {item.text}
-              </a>
-            </li>
+        <div className="noun-grid">
+          {ALL_IDS.map((id) => (
+            <NounCard
+              key={id}
+              id={id}
+              status={data.statuses[id] ?? { kind: "treasury" }}
+              listingId={data.listingIdByToken[id]}
+            />
           ))}
-        </ul>
-      </section>
-    </main>
+        </div>
+
+        <section className="feed">
+          <h2>What happened onchain</h2>
+          {preDeploy ? (
+            <p className="muted">Nothing yet. The manager contract is not in config. All 24 Nouns sit in the treasury.</p>
+          ) : null}
+          {!preDeploy && data.feed.length === 0 && !data.loading ? <p className="muted">No activity yet.</p> : null}
+          {data.loading && !preDeploy ? <p className="muted">Reading the chain...</p> : null}
+          <ul>
+            {data.feed.map((item) => (
+              <li key={item.key}>
+                <a href={`https://etherscan.io/tx/${item.tx}`} target="_blank" rel="noreferrer" className="feed-link">
+                  {item.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </main>
+    </OperatorProvider>
   );
 }
