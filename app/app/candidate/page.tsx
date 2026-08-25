@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { mainnet } from "wagmi/chains";
 import WalletBar from "@/components/WalletBar";
 import { encodeAbiParameters, parseAbi, parseEther, formatEther } from "viem";
 import { ALL_IDS, MANAGER, NOUNS_TOKEN, shortAddr } from "@/lib/config";
@@ -92,7 +93,7 @@ export default function CandidatePage() {
 
       {!MANAGER && <p className="badge b-hot">NEXT_PUBLIC_MANAGER_ADDRESS is unset. Set it and restart.</p>}
 
-      <WalletBar />
+      <WalletBar chain={mainnet} />
       {isConnected && (
         <p className="muted">
           {votes !== undefined ? `${votes} votes` : "reading votes..."} ·{" "}

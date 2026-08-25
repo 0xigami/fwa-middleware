@@ -6,7 +6,7 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagm
 import { ALL_IDS, MANAGER } from "@/lib/config";
 import { managerAbi } from "@/lib/abis";
 import { fmtEth, type FwaData } from "@/lib/useFwaData";
-import { TARGET_CHAIN } from "@/lib/wagmi";
+import { TARGET_CHAIN, txUrl } from "@/lib/wagmi";
 import WalletBar from "@/components/WalletBar";
 
 const FWA_TOKEN = "0xa0Df17B5aC76ABaBA36E1450E2cbCd18A620C845";
@@ -137,7 +137,7 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
       {txHash && (
         <p className="muted">
           {txConfirmed ? "Confirmed: " : "Pending: "}
-          <a href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noreferrer" className="feed-link">{txHash.slice(0, 18)}...</a>
+          <a href={txUrl(txHash)} target="_blank" rel="noreferrer" className="feed-link">{txHash.slice(0, 18)}...</a>
         </p>
       )}
       {error && <p className="op-error">{error.message.split("\n")[0]}</p>}

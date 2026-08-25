@@ -1,18 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Address } from "viem";
+import type { Address, Chain } from "viem";
 import { useAccount, useConnect, useDisconnect, useSwitchChain } from "wagmi";
 import { shortAddr } from "@/lib/config";
 import { TARGET_CHAIN, walletConnectProjectId } from "@/lib/wagmi";
 
 function connectorLabel(id: string, name: string): string {
-  if (id === "walletConnect") return "WalletConnect";
+  if (id === "walletConnect") return "Rainbow";
   if (id === "injected") return "Browser wallet";
   return name;
 }
 
-export default function WalletBar({ operator }: { operator?: Address }) {
+export default function WalletBar({
+  operator,
+  chain = TARGET_CHAIN,
+}: {
+  operator?: Address;
+  chain?: Chain;
+}) {
   const { address, isConnected, chainId } = useAccount();
   const { connect, connectors, isPending, error: connectError } = useConnect();
   const { disconnect } = useDisconnect();
@@ -34,7 +40,7 @@ export default function WalletBar({ operator }: { operator?: Address }) {
     [connectors, hasInjected],
   );
 
-  const wrongNetwork = isConnected && chainId !== TARGET_CHAIN.id;
+  const wrongNetwork = isConnected && chainId !== chain.id;
   const isOperator =
     isConnected && !!operator && address?.toLowerCase() === operator.toLowerCase();
 
@@ -44,13 +50,13 @@ export default function WalletBar({ operator }: { operator?: Address }) {
         <>
           <p className="wallet-bar-copy">
             {operator
-              ? "Operator is gami.eth. On a phone, connect Rainbow with WalletConnect (Ledger Nano signs inside Rainbow). A browser extension is not required."
-              : "Connect a wallet. On a phone, use WalletConnect to open Rainbow. A browser extension is not required."}
+              ? "Operator is gami.eth. On a phone, tap Connect Rainbow — WalletConnect opens Rainbow, which prompts the Nano X. No browser extension."
+              : "On a phone, tap Connect Rainbow. WalletConnect opens Rainbow (deep link). No browser extension."}
           </p>
           <div className="wallet-bar-actions">
             {!mounted ? (
               <button type="button" className="btn" disabled>
-                Connect
+                Connect Rainbow
               </button>
             ) : (
               visibleConnectors.map((c) => (
@@ -61,7 +67,7 @@ export default function WalletBar({ operator }: { operator?: Address }) {
                   disabled={isPending}
                   onClick={() => connect({ connector: c })}
                 >
-                  {isPending ? "Opening…" : `Connect ${connectorLabel(c.id, c.name)}`}
+                  {isPending ? "Opening Rainbow…" : `Connect ${connectorLabel(c.id, c.name)}`}
                 </button>
               ))
             )}
@@ -81,7 +87,7 @@ export default function WalletBar({ operator }: { operator?: Address }) {
               Connected {shortAddr(address!)}
               {isOperator ? " · operator" : operator ? " · not the operator" : ""}
               {" · "}
-              {chainId === TARGET_CHAIN.id ? TARGET_CHAIN.name : `chain ${chainId ?? "?"}`}
+              {chainId === chain.id ? chain.name : `chain ${chainId ?? "?"}`}
             </p>
             <button type="button" className="btn" onClick={() => disconnect()}>
               Disconnect
@@ -98,16 +104,16 @@ export default function WalletBar({ operator }: { operator?: Address }) {
       {wrongNetwork && (
         <div className="wrong-network" role="alert">
           <p>
-            Wrong network. This panel signs on {TARGET_CHAIN.name} (chain {TARGET_CHAIN.id}), not chain{" "}
-            {chainId}. Switch before listing.
+            Wrong network. This panel signs on {chain.name} (chain {chain.id}), not chain {chainId}.
+            Switch before signing.
           </p>
           <button
             type="button"
             className="btn"
             disabled={switching}
-            onClick={() => switchChain({ chainId: TARGET_CHAIN.id })}
+            onClick={() => switchChain({ chainId: chain.id })}
           >
-            {switching ? "Switching…" : `Switch to ${TARGET_CHAIN.name}`}
+            {switching ? "Switching…" : `Switch to ${chain.name}`}
           </button>
         </div>
       )}

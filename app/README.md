@@ -23,7 +23,7 @@ Before the manager is deployed, leave `NEXT_PUBLIC_MANAGER_ADDRESS` unset: the p
 
 ## Operator strip
 
-Connect a browser wallet (if one is injected) or WalletConnect. On a phone, WalletConnect opens the Reown modal (QR / deep link) so Rainbow (and other wallets) can sign without a browser extension. If the address matches `manager.operator()`, per-Noun buttons appear: list at floor divided by the FWA settlement discount (floor from CoinGecko), withdraw listing, return home, plus sweep/claim buttons. Wrong-network is called out; txs target Ethereum mainnet. Anything fancier: Etherscan is the fallback console.
+Connect a browser wallet (if one is injected) or WalletConnect. On a phone, WalletConnect opens Rainbow (deep link); Rainbow prompts the Nano X. No Ledger Live, no browser extension. Operator txs target Robinhood Chain (id 4663). If the address matches `manager.operator()`, per-Noun buttons appear: list at floor divided by the FWA settlement discount (floor from CoinGecko), withdraw listing, return home, plus sweep/claim buttons. Wrong-network is called out. Anything fancier: the chain explorer is the fallback console.
 
 ## Deploy (Vercel)
 
