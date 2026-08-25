@@ -48,8 +48,14 @@ export default function ManagerField() {
               setAddressDraft(e.target.value);
               setError(undefined);
             }}
+            aria-invalid={Boolean(error)}
           />
         </label>
+        {error && (
+          <p className="op-error" role="alert">
+            {error}
+          </p>
+        )}
         <label className="manager-label">
           Start block (optional)
           <input
@@ -81,7 +87,6 @@ export default function ManagerField() {
             {startBlock !== undefined ? ` from block ${startBlock.toString()}` : ""}.
           </p>
         )}
-        {error && <p className="op-error">{error}</p>}
       </form>
     </section>
   );
