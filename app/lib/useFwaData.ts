@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createPublicClient, formatEther, http, zeroAddress, type Address } from "viem";
 import { mainnet } from "viem/chains";
 import {
-  ALL_IDS, FWA_CORE, NOUNS_TOKEN, RPC_URL, TREASURY, shortAddr,
+  ALL_IDS, FWA_CORE, MANAGER, NOUNS_TOKEN, RPC_URL, START_BLOCK, TREASURY, shortAddr,
 } from "./config";
 import {
   evAllocated, evBidAccepted, evKept, evListed, evNounReturned, evSweptETH, evWithdrawn,
@@ -47,7 +47,7 @@ const initial: FwaData = {
   stats: {},
 };
 
-async function fetchAll(managerAddr?: Address, startBlock?: bigint): Promise<FwaData> {
+async function fetchAll(): Promise<FwaData> {
   const owners = await client.multicall({
     contracts: ALL_IDS.map((id) => ({
       address: NOUNS_TOKEN, abi: nounsAbi, functionName: "ownerOf" as const, args: [BigInt(id)] as const,
@@ -56,14 +56,14 @@ async function fetchAll(managerAddr?: Address, startBlock?: bigint): Promise<Fwa
 
   const data: FwaData = { ...initial, loading: false, statuses: {}, stats: {} };
 
-  if (!managerAddr) {
+  if (!MANAGER) {
     for (const id of ALL_IDS) data.statuses[id] = { kind: "treasury" };
     return data;
   }
-  const manager = managerAddr;
+  const manager = MANAGER;
 
   const latest = await client.getBlockNumber();
-  const fromBlock = startBlock ?? (latest > 1_000_000n ? latest - 1_000_000n : 0n);
+  const fromBlock = START_BLOCK ?? (latest > 1_000_000n ? latest - 1_000_000n : 0n);
   const range = { fromBlock, toBlock: latest } as const;
 
   const [managerLogs, views] = await Promise.all([
@@ -179,12 +179,12 @@ async function fetchAll(managerAddr?: Address, startBlock?: bigint): Promise<Fwa
   return data;
 }
 
-export function useFwaData(manager?: Address, startBlock?: bigint): FwaData {
+export function useFwaData(): FwaData {
   const [data, setData] = useState<FwaData>(initial);
   useEffect(() => {
     let alive = true;
     const run = () =>
-      fetchAll(manager, startBlock)
+      fetchAll()
         .then((d) => alive && setData(d))
         .catch((e) => console.error("fwa fetch", e));
     run();
@@ -193,6 +193,6 @@ export function useFwaData(manager?: Address, startBlock?: bigint): FwaData {
       alive = false;
       clearInterval(t);
     };
-  }, [manager, startBlock]);
+  }, []);
   return data;
 }

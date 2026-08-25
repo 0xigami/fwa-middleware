@@ -20,22 +20,26 @@ export function parseStartBlock(raw: string): bigint | undefined {
   }
 }
 
-/** Optional local override only. Do not set on Vercel. */
-export const MANAGER_ENV = parseManagerAddress(process.env.NEXT_PUBLIC_MANAGER_ADDRESS ?? "");
-export const START_BLOCK_ENV = parseStartBlock(process.env.NEXT_PUBLIC_START_BLOCK ?? "");
+/**
+ * Public listing manager (not a secret). After Nouns 992 executes, CoS puts the
+ * address here or in NEXT_PUBLIC_MANAGER_ADDRESS and deploys. Empty = preview,
+ * writes disabled.
+ */
+export const MANAGER_ADDRESS = "";
+
+export const MANAGER = parseManagerAddress(
+  process.env.NEXT_PUBLIC_MANAGER_ADDRESS || MANAGER_ADDRESS,
+);
+
+export const START_BLOCK = parseStartBlock(process.env.NEXT_PUBLIC_START_BLOCK ?? "");
 
 export const RPC_URL =
   process.env.NEXT_PUBLIC_RPC || "https://ethereum-rpc.publicnode.com";
 
-export const PYRAMID_ROWS: number[][] = [
-  [11],
-  [26, 82, 89],
-  [279, 408, 548, 559, 801, 861],
-  [1914, 1917, 1929, 1933, 1942, 1950, 1954],
-  [1957, 1958, 1969, 1980, 1983, 1988, 1989],
+export const ALL_IDS: number[] = [
+  11, 26, 82, 89, 279, 408, 548, 559, 801, 861, 1914, 1917, 1929, 1933, 1942, 1950,
+  1954, 1957, 1958, 1969, 1980, 1983, 1988, 1989,
 ];
-
-export const ALL_IDS: number[] = PYRAMID_ROWS.flat();
 
 export function shortAddr(a: string): string {
   return a.slice(0, 6) + "..." + a.slice(-4);
