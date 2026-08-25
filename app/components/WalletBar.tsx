@@ -104,8 +104,8 @@ export default function WalletBar({
       {wrongNetwork && (
         <div className="wrong-network" role="alert">
           <p>
-            Wrong network. This panel signs on {chain.name} (chain {chain.id}), not chain {chainId}.
-            Switch before signing.
+            Wrong network. This panel signs on Ethereum (chain {chain.id}), not chain {chainId}.
+            Switch to Ethereum before listing.
           </p>
           <button
             type="button"
@@ -113,7 +113,7 @@ export default function WalletBar({
             disabled={switching}
             onClick={() => switchChain({ chainId: chain.id })}
           >
-            {switching ? "Switching…" : `Switch to ${chain.name}`}
+            {switching ? "Switching…" : "Switch to Ethereum"}
           </button>
         </div>
       )}

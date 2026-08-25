@@ -1,4 +1,3 @@
-import { defineChain } from "viem";
 import { createConfig, http, injected } from "wagmi";
 import { walletConnect } from "wagmi/connectors";
 import { mainnet } from "wagmi/chains";
@@ -8,20 +7,11 @@ import { RPC_URL } from "@/lib/config";
 export const RAINBOW_WALLET_ID =
   "1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369";
 
-export const robinhoodChain = defineChain({
-  id: 4663,
-  name: "Robinhood Chain",
-  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-  rpcUrls: {
-    default: { http: ["https://rpc.mainnet.chain.robinhood.com"] },
-  },
-  blockExplorers: {
-    default: { name: "Blockscout", url: "https://robinhoodchain.blockscout.com" },
-  },
-});
-
-/** Operator list() / WalletConnect session target. */
-export const TARGET_CHAIN = robinhoodChain;
+/**
+ * Ethereum mainnet. NounsListingManager 0x89ec417F…089b and FWA core live here.
+ * Robinhood Chain 4663 is StockRip, not this operator panel — no code at those addresses.
+ */
+export const TARGET_CHAIN = mainnet;
 
 export const walletConnectProjectId =
   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.trim() ?? "";
@@ -35,7 +25,7 @@ export function getConfig(opts?: { walletConnect?: boolean }) {
   const useWalletConnect = Boolean(opts?.walletConnect && walletConnectProjectId);
 
   return createConfig({
-    chains: [TARGET_CHAIN, mainnet],
+    chains: [TARGET_CHAIN],
     connectors: [
       injected(),
       ...(useWalletConnect
@@ -69,8 +59,7 @@ export function getConfig(opts?: { walletConnect?: boolean }) {
         : []),
     ],
     transports: {
-      [TARGET_CHAIN.id]: http(TARGET_CHAIN.rpcUrls.default.http[0]),
-      [mainnet.id]: http(RPC_URL),
+      [TARGET_CHAIN.id]: http(RPC_URL),
     },
     ssr: true,
   });

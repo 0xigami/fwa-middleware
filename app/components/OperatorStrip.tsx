@@ -49,7 +49,13 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
   const off = isPending || preview || (isConnected && !onTargetChain);
   const backing = floorWei && data.discountBps > 0n ? (floorWei * 10000n) / data.discountBps : undefined;
   const call = (functionName: string, args?: readonly unknown[]) =>
-    writeContract({ address: MANAGER!, abi: managerAbi, functionName, args } as Parameters<typeof writeContract>[0]);
+    writeContract({
+      address: MANAGER!,
+      abi: managerAbi,
+      functionName,
+      args,
+      chainId: TARGET_CHAIN.id,
+    } as Parameters<typeof writeContract>[0]);
 
   const listingIds = Object.values(data.listingIdByToken);
 
