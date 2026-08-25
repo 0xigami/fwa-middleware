@@ -41,10 +41,7 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
   const preview = !MANAGER;
   const isOperator = isConnected && !!data.operator && address?.toLowerCase() === data.operator.toLowerCase();
   const onTargetChain = chainId === TARGET_CHAIN.id;
-
-  if (!preview && !isOperator) {
-    return <WalletBar operator={data.operator} />;
-  }
+  const showConsole = preview || isOperator;
 
   const off = isPending || preview || (isConnected && !onTargetChain);
   const backing = floorWei && data.discountBps > 0n ? (floorWei * 10000n) / data.discountBps : undefined;
@@ -61,8 +58,9 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
 
   return (
     <>
-      {!preview && <WalletBar operator={data.operator} />}
-      <section className="op-strip">
+      <WalletBar operator={data.operator} />
+      {showConsole && (
+        <section className="op-strip">
       <h2>Operator console{preview ? " (preview: manager not deployed yet)" : ""}</h2>
       <p className="muted">
         Floor {floorWei ? fmtEth(floorWei) : "n/a"} · buyback rate {Number(data.discountBps) / 100}% · list backing = floor ÷ {Number(data.discountBps) / 10000} = {backing ? fmtEth(backing) : "n/a"}
@@ -146,8 +144,9 @@ export default function OperatorStrip({ data }: { data: FwaData }) {
           <a href={txUrl(txHash)} target="_blank" rel="noreferrer" className="feed-link">{txHash.slice(0, 18)}...</a>
         </p>
       )}
-      {error && <p className="op-error">{error.message.split("\n")[0]}</p>}
-      </section>
+        {error && <p className="op-error">{error.message.split("\n")[0]}</p>}
+        </section>
+      )}
     </>
   );
 }
