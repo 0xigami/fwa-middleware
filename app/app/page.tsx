@@ -25,10 +25,6 @@ export default function Page() {
     <OperatorProvider data={data}>
       <main className="main">
         <h1 className="title">Fake World Assets</h1>
-        <p className="subtitle">
-          24 Nouns from the treasury, listed on <a href="https://fwa.fun" target="_blank" rel="noreferrer">fwa.fun</a> at
-          floor divided by 0.9. Every exit path is hardcoded back home. Watch it live.
-        </p>
 
         <div className="tiles">
           <Tile label="Fees earned" value={preDeploy ? na : stats.fees ?? na} />
