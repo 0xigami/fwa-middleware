@@ -105,6 +105,23 @@ a { color: var(--red); }
   gap: 12px;
 }
 .wallet-bar-copy { font-weight: 300; font-size: 1.05rem; line-height: 1.35; }
+.manager-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.manager-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 1.05rem;
+}
+.manager-input {
+  width: 100%;
+  min-height: 48px;
+  font-size: 1rem;
+  padding: 12px 14px;
+}
 .wallet-bar-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .wallet-bar-status {
   display: flex;
