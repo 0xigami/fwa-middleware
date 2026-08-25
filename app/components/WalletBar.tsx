@@ -44,8 +44,8 @@ export default function WalletBar({ operator }: { operator?: Address }) {
         <>
           <p className="wallet-bar-copy">
             {operator
-              ? "Operator is gami.eth. On a phone, connect Ledger Live (or another wallet) with WalletConnect. A browser extension is not required."
-              : "Connect a wallet. On a phone, use WalletConnect (Ledger Live or another wallet). A browser extension is not required."}
+              ? "Operator is gami.eth. On a phone, connect Rainbow with WalletConnect (Ledger Nano signs inside Rainbow). A browser extension is not required."
+              : "Connect a wallet. On a phone, use WalletConnect to open Rainbow. A browser extension is not required."}
           </p>
           <div className="wallet-bar-actions">
             {!mounted ? (
